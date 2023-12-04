@@ -10,6 +10,6 @@ I did the following steps to install AWS CLI.
 cd Workspace
 ```
 
-**Note to insert image**
+![Test image](assets/location.webp)
 
 ## Homework Challenges
