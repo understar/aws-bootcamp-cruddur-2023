@@ -19,3 +19,12 @@ vscode:
   extensions:
     - 42Crunch.vscode-openapi
     - ms-azuretools.vscode-docker
+
+ports:
+  - name: frontend
+    port: 3000
+    onOpen: open-browser
+    visibility: public
+  - name: backend
+    port: 4567
+    visibility: public
