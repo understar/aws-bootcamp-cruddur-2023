@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, timezone
 from aws_xray_sdk.core import xray_recorder
 
 class CreateReply:
+  # Using decorator is more convenient.
+  # @xray_recorder.capture("create_reply")
   def run(message, user_handle, activity_uuid):
     # x-ray
     # Start a segment
