@@ -157,20 +157,21 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-  LOGGER.info('Start authorization')
+  # LOGGER.info('Start authorization')
   # LOGGER.info(request.headers.get('Authorization'))
+  app.logger.debug('Start authorization.')
   access_token = CognitoTokenVertification.extract_access_token(request.headers)
-  # LOGGER.info(access_token)
-
   try:
       cognito_token_vertification.verify(access_token)
-      g.claims = cognito_token_vertification.claims
+      claims = cognito_token_vertification.claims
+      data = HomeActivities.run(claims['username'])
+      app.logger.debug('Authorization success.')
   except TokenVerifyError as e:
-      _ = request.data
-      abort(make_response(jsonify(message=str(e)), 401))
-
-  LOGGER.info('Authorization pass')
-  data = HomeActivities.run()
+      data = HomeActivities.run()
+      app.logger.debug('Authorization fail.')
+      # _ = request.data
+      # abort(make_response(jsonify(message=str(e)), 401))
+  # data = HomeActivities.run()
   return data, 200
 
 
