@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request
+from flask import request, abort, make_response, jsonify, g
 from flask_cors import CORS, cross_origin
 import os
 
@@ -13,6 +13,9 @@ from services.message_groups import *
 from services.messages import *
 from services.create_message import *
 from services.show_activity import *
+
+# from flask_awscognito import AWSCognitoAuthentication
+from lib.cognito_token_vertification import CognitoTokenVertification, TokenVerifyError, FlaskAWSCognitoError
 
 # Honeycomb
 from opentelemetry import trace
@@ -57,6 +60,14 @@ tracer = trace.get_tracer(__name__)
 
 app = Flask(__name__)
 
+# app.config['AWS_DEFAULT_REGION'] = 'eu-west-1'
+# app.config['AWS_COGNITO_USER_POOL_ID'] = os.getenv('AWS_COGNITO_USER_POOL_ID')
+# app.config['AWS_COGNITO_USER_POOL_CLIENT_ID'] = os.getenv('AWS_COGNITO_USER_POOL_CLIENT_ID')
+cognito_token_vertification = CognitoTokenVertification(
+  user_pool_id=os.getenv('AWS_COGNITO_USER_POOL_ID'),
+  user_pool_client_id=os.getenv('AWS_COGNITO_USER_POOL_CLIENT_ID'),
+  region=os.getenv('AWS_DEFAULT_REGION')
+)
 
 # Initialize automatic instrumentation with Flask
 FlaskInstrumentor().instrument_app(app)
@@ -74,8 +85,10 @@ origins = [frontend, backend]
 cors = CORS(
   app, 
   resources={r"/api/*": {"origins": origins}},
-  expose_headers="location,link",
-  allow_headers="content-type,if-modified-since",
+  headers=['Content-Type', 'Authorization'],
+  expose_headers="Authorization",
+  # expose_headers="location,link",
+  # allow_headers="content-type,if-modified-since",
   methods="OPTIONS,GET,HEAD,POST"
 )
 
@@ -144,7 +157,19 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-  LOGGER.info('Hello Cloudwatch! from  /api/activities/home')
+  LOGGER.info('Start authorization')
+  # LOGGER.info(request.headers.get('Authorization'))
+  access_token = CognitoTokenVertification.extract_access_token(request.headers)
+  # LOGGER.info(access_token)
+
+  try:
+      cognito_token_vertification.verify(access_token)
+      g.claims = cognito_token_vertification.claims
+  except TokenVerifyError as e:
+      _ = request.data
+      abort(make_response(jsonify(message=str(e)), 401))
+
+  LOGGER.info('Authorization pass')
   data = HomeActivities.run()
   return data, 200
 
