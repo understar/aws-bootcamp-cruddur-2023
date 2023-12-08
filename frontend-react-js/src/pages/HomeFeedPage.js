@@ -8,7 +8,7 @@ import ActivityForm from '../components/ActivityForm';
 import ReplyForm from '../components/ReplyForm';
 
 // [TODO] Authenication
-import { getCurrentUser } from 'aws-amplify/auth';
+import { Auth } from 'aws-amplify';
 
 export default function HomeFeedPage() {
   const [activities, setActivities] = React.useState([]);
@@ -36,7 +36,7 @@ export default function HomeFeedPage() {
   };
 
   const checkAuth = async () => {
-    getCurrentUser({
+    Auth.currentAuthenticatedUser({
       // Optional, By default is false. 
       // If set to true, this call will send a 
       // request to Cognito to get the latest user data
@@ -44,7 +44,7 @@ export default function HomeFeedPage() {
     })
     .then((user) => {
       console.log('user',user);
-      return getCurrentUser()
+      return Auth.currentAuthenticatedUser()
     }).then((cognito_user) => {
         setUser({
           display_name: cognito_user.attributes.name,

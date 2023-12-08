@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 // [TODO] Authenication
 import Cookies from 'js-cookie'
-import { signIn } from 'aws-amplify/auth';
+import { Auth } from 'aws-amplify';
 
 export default function SigninPage() {
 
@@ -15,10 +15,11 @@ export default function SigninPage() {
   // const [cognitoErrors, setCognitoErrors] = React.useState('');
 
   const onsubmit = async (event) => {
-    setErrors('');
-    event.preventDefault();
-    // console.log('email', email);
-    signIn(email, password)
+    setErrors('')
+    event.preventDefault()
+    // console.log('onsubmit')
+    // console.log('email: %s, password: %s', email, password)
+    Auth.signIn(email, password)
       .then(user => {
         localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
         window.location.href = "/"
