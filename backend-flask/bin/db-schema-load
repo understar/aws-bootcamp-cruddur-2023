@@ -1,7 +1,10 @@
 #! /usr/bin/bash
 
-echo "db-schema-load"
-echo $0
+CYAN='\033[1;36m'
+NO_COLOR='\033[0m'
+LABEL="db-schema-load"
+printf "${CYAN}==== ${LABEL}${NO_COLOR}\n"
+
 # Get the directory of the script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
