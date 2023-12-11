@@ -1,1 +1,11 @@
 #! /usr/bin/bash
+
+echo "db-schema-load"
+echo $0
+# Get the directory of the script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Get schema.sql full path
+schema_path="$DIR/../db/schema.sql"
+echo $schema_path
+psql $CONNECTION_URL cruddur < $schema_path

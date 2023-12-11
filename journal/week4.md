@@ -77,7 +77,7 @@ https://www.postgresql.org/docs/current/sql-createtable.html
 CREATE TABLE public.users (
   uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   display_name text,
-  handle text
+  handle text,
   cognito_user_id text,
   created_at TIMESTAMP default current_timestamp NOT NULL
 );
@@ -139,6 +139,7 @@ mkdir /workspace/aws-bootcamp-cruddur-2023/backend-flask/bin
 ```
 
 ```sh
+# Connection string
 export CONNECTION_URL="postgresql://postgres:pssword@127.0.0.1:5433/cruddur"
 gp env CONNECTION_URL="postgresql://postgres:pssword@127.0.0.1:5433/cruddur"
 ```
@@ -147,7 +148,7 @@ We'll create a new bash script `bin/db-connect`
 
 ```sh
 #! /usr/bin/bash
-
+# quick connect using connection string
 psql $CONNECTION_URL
 ```
 
