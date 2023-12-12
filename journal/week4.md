@@ -346,10 +346,10 @@ We'll create an inbound rule for Postgres (5432) and provide the GITPOD ID.
 We'll get the security group rule id so we can easily modify it in the future from the terminal here in Gitpod.
 
 ```sh
-export DB_SG_ID="sg-0127d2293f82c552f"
-gp env DB_SG_ID="sg-0127d2293f82c552f"
-export DB_SG_RULE_ID="sgr-013c4a842a45e7b60"
-gp env DB_SG_RULE_ID="sgr-013c4a842a45e7b60"
+export DB_SG_ID="sg-0c3209bf8682bfa16"
+gp env DB_SG_ID="sg-0c3209bf8682bfa16"
+export DB_SG_RULE_ID="sgr-0c658fb30f001a222"
+gp env DB_SG_RULE_ID="sgr-0c658fb30f001a222"
 ```
 
 Whenever we need to update our security groups we can do this for access.
@@ -372,14 +372,14 @@ postgresql://root:huEE33z2Qvl383@cruddur-db-instance.czz1cuvepklc.ca-central-1.r
 We'll test that it works in Gitpod:
 
 ```sh
-psql postgresql://root:huEE33z2Qvl383@cruddur-db-instance.czz1cuvepklc.ca-central-1.rds.amazonaws.com:5432/cruddur
+psql postgresql://postgres:password@cruddur-db-instance.cduzvyym9o1c.us-east-1.rds.amazonaws.com:5432/cruddur
 ```
 
 We'll update your URL for production use case
 
 ```sh
-export PROD_CONNECTION_URL="postgresql://root:huEE33z2Qvl383@cruddur-db-instance.czz1cuvepklc.ca-central-1.rds.amazonaws.com:5432/cruddur"
-gp env PROD_CONNECTION_URL="postgresql://root:huEE33z2Qvl383@cruddur-db-instance.czz1cuvepklc.ca-central-1.rds.amazonaws.com:5432/cruddur"
+export PROD_CONNECTION_URL="postgresql://postgres:password@cruddur-db-instance.cduzvyym9o1c.us-east-1.rds.amazonaws.com:5432/cruddur"
+gp env PROD_CONNECTION_URL="postgresql://postgres:password@cruddur-db-instance.cduzvyym9o1c.us-east-1.rds.amazonaws.com:5432/cruddur"
 ```
 
 ## Update Bash scripts for production
