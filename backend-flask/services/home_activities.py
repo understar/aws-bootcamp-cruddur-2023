@@ -64,6 +64,10 @@ class HomeActivities:
       #   )
 
     # wrap to get json array return
+    # sql = query_wrap_array("""
+    #   SELECT * FROM activities
+    # """)
+    # wrap to get json array return
     sql = query_wrap_array("""
       SELECT
         activities.uuid,
@@ -80,13 +84,12 @@ class HomeActivities:
       LEFT JOIN public.users ON users.uuid = activities.user_uuid
       ORDER BY activities.created_at DESC
     """)
-    print(sql)
 
     with pool.connection() as conn:
       with conn.cursor() as cur:
         cur.execute(sql)
         # this will return a tuple
         # the first field being the data
-        results = cur.fetchall()
+        results = cur.fetchone()
     # span.set_attribute("app.result_length", len(results))
-    return results
+    return results[0]

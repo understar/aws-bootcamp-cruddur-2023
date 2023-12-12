@@ -173,6 +173,7 @@ def data_home():
   #       # _ = request.data
   #       # abort(make_response(jsonify(message=str(e)), 401))
   data = HomeActivities.run()
+  LOGGER.info(f"This is the data from server. The len is {len(data)}")
   return data, 200
 
 
