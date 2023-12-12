@@ -189,51 +189,9 @@ psql $NO_DB_CONNECTION_URL -c "select pid as process_id, \
 from pg_stat_activity;"
 ```
 
-> We could have idle connections left open by our Database Explorer extension, try disconnecting and checking again the sessions 
-
-## Shell script to create the database
-
-`bin/db-create`
-
-```sh
-#! /usr/bin/bash
-
-NO_DB_CONNECTION_URL=$(sed 's/\/cruddur//g' <<<"$CONNECTION_URL")
-createdb cruddur $NO_DB_CONNECTION_URL
-```
-
-## Shell script to load the schema
-
-`bin/db-schema-load`
-
-```sh
-#! /usr/bin/bash
-
-schema_path="$(realpath .)/db/schema.sql"
-
-echo $schema_path
-
-NO_DB_CONNECTION_URL=$(sed 's/\/cruddur//g' <<<"$CONNECTION_URL")
-psql $NO_DB_CONNECTION_URL cruddur < $schema_path
-```
-
-## Shell script to load the seed data
-
-```sh
-#! /usr/bin/bash
-
-#echo "== db-schema-load"
-
-
-schema_path="$(realpath .)/db/schema.sql"
-
-echo $schema_path
-
-psql $CONNECTION_URL cruddur < $schema_path
-```
+> We could have idle connections left open by our **Database Explorer** extension, try disconnecting and checking again the sessions 
 
 ## Easily setup (reset) everything for our database
-
 
 ```sh
 #! /usr/bin/bash
@@ -296,14 +254,14 @@ from psycopg_pool import ConnectionPool
 import os
 
 def query_wrap_object(template):
-  sql = '''
+  sql = f'''
   (SELECT COALESCE(row_to_json(object_row),'{}'::json) FROM (
   {template}
   ) object_row);
   '''
 
 def query_wrap_array(template):
-  sql = '''
+  sql = f'''
   (SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) FROM (
   {template}
   ) array_row);
@@ -313,7 +271,7 @@ connection_url = os.getenv("CONNECTION_URL")
 pool = ConnectionPool(connection_url)
 ```
 
-In our home activities we'll replace our mock endpoint with real api call:
+In our home activities we'll replace our mock endpoint with real api call (home_activities):
 
 ```py
 from lib.db import pool, query_wrap_array
