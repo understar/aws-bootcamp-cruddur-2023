@@ -34,3 +34,6 @@ ports:
   - name: backend
     port: 4567
     visibility: public
+  - name: postgresql
+    port: 5432
+    visibility: public
