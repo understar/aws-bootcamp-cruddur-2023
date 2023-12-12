@@ -254,18 +254,20 @@ from psycopg_pool import ConnectionPool
 import os
 
 def query_wrap_object(template):
-  sql = f'''
-  (SELECT COALESCE(row_to_json(object_row),'{}'::json) FROM (
+  sql = f"""
+  (SELECT COALESCE(row_to_json(object_row),'{{}}'::json) FROM (
   {template}
   ) object_row);
-  '''
+  """
+  return sql
 
 def query_wrap_array(template):
-  sql = f'''
+  sql = f"""
   (SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) FROM (
   {template}
   ) array_row);
-  '''
+  """
+  return sql
 
 connection_url = os.getenv("CONNECTION_URL")
 pool = ConnectionPool(connection_url)
@@ -303,6 +305,9 @@ from lib.db import pool, query_wrap_array
 ```
 
 ## Provision RDS Instance
+Create a rds. 
+user: postgres
+password: password
 
 ```sh
 aws rds create-db-instance \
@@ -310,10 +315,10 @@ aws rds create-db-instance \
   --db-instance-class db.t3.micro \
   --engine postgres \
   --engine-version  14.6 \
-  --master-username root \
-  --master-user-password huEE33z2Qvl383 \
+  --master-username postgres \
+  --master-user-password password \
   --allocated-storage 20 \
-  --availability-zone ca-central-1a \
+  --availability-zone us-east-1a \
   --backup-retention-period 0 \
   --port 5432 \
   --no-multi-az \
@@ -321,8 +326,6 @@ aws rds create-db-instance \
   --storage-type gp2 \
   --publicly-accessible \
   --storage-encrypted \
-  --enable-performance-insights \
-  --performance-insights-retention-period 7 \
   --no-deletion-protection
 ```
 
@@ -343,17 +346,17 @@ We'll create an inbound rule for Postgres (5432) and provide the GITPOD ID.
 We'll get the security group rule id so we can easily modify it in the future from the terminal here in Gitpod.
 
 ```sh
-export DB_SG_ID="sg-0b725ebab7e25635e"
-gp env DB_SG_ID="sg-0b725ebab7e25635e"
-export DB_SG_RULE_ID="sgr-070061bba156cfa88"
-gp env DB_SG_RULE_ID="sgr-070061bba156cfa88"
+export DB_SG_ID="sg-0127d2293f82c552f"
+gp env DB_SG_ID="sg-0127d2293f82c552f"
+export DB_SG_RULE_ID="sgr-013c4a842a45e7b60"
+gp env DB_SG_RULE_ID="sgr-013c4a842a45e7b60"
 ```
 
 Whenever we need to update our security groups we can do this for access.
 ```sh
 aws ec2 modify-security-group-rules \
     --group-id $DB_SG_ID \
-    --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
+    --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=GITPOD,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
 ```
 
 https://docs.aws.amazon.com/cli/latest/reference/ec2/modify-security-group-rules.html#examples
