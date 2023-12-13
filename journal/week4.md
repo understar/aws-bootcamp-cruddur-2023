@@ -363,13 +363,7 @@ https://docs.aws.amazon.com/cli/latest/reference/ec2/modify-security-group-rules
 
 ## Test remote access
 
-We'll create a connection url:
-
-```
-postgresql://root:huEE33z2Qvl383@cruddur-db-instance.czz1cuvepklc.ca-central-1.rds.amazonaws.com:5433/cruddur
-```
-
-We'll test that it works in Gitpod:
+We'll create a connection URL and test that it works in Gitpod:
 
 ```sh
 psql postgresql://postgres:password@cruddur-db-instance.cduzvyym9o1c.us-east-1.rds.amazonaws.com:5432/cruddur
@@ -415,16 +409,16 @@ We'll add a command step for postgres:
 - Add a layer for psycopg2 with one of the below methods for development or production 
 
 ENV variables needed for the lambda environment.
-```
-PG_HOSTNAME='cruddur-db-instance.czz1cuvepklc.ca-central-1.rds.amazonaws.com'
+```ini
+PG_HOSTNAME='cruddur-db-instance.cduzvyym9o1c.us-east-1.rds.amazonaws.com'
 PG_DATABASE='cruddur'
-PG_USERNAME='root'
-PG_PASSWORD='huEE33z2Qvl383'
+PG_USERNAME='postgres'
+PG_PASSWORD='password'
 ```
 
 The function
 
-```
+```py
 import json
 import psycopg2
 
@@ -455,6 +449,8 @@ def lambda_handler(event, context):
 
 ### Development
 https://github.com/AbhimanyuHK/aws-psycopg2
+
+https://github.com/jetbridge/psycopg2-lambda-layer
 
 `
 This is a custom compiled psycopg2 C library for Python. Due to AWS Lambda missing the required PostgreSQL libraries in the AMI image, we needed to compile psycopg2 with the PostgreSQL libpq.so library statically linked libpq library instead of the default dynamic link.
