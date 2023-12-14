@@ -6,7 +6,7 @@ sudo apt update
 sudo apt install -y postgresql-client-13 libpq-dev
 
 export CODESPACE_IP=$(curl ifconfig.me)
-source "$CODESPACE_VSCODE_FOLDER/backend-flask/db-update-sg-rule"
+source "$CODESPACE_VSCODE_FOLDER/backend-flask/bin/db-update-sg-rule"
 
 cd $CODESPACE_VSCODE_FOLDER/backend-flask
 pip install -r requirements.txt
