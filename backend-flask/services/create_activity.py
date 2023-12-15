@@ -64,7 +64,7 @@ class CreateActivity:
     uuid = db.query_commit(sql, {
       'handle' : handle,
       'message': message,
-      'expires_at': expires_at
+      'expires_at': expires_at # expires_at not expired_at
     })
     return uuid
 

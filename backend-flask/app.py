@@ -14,6 +14,8 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
+from lib.db import db
+
 # from flask_awscognito import AWSCognitoAuthentication
 from lib.cognito_token_vertification import CognitoTokenVertification, TokenVerifyError, FlaskAWSCognitoError
 
@@ -204,15 +206,34 @@ def data_search():
 @app.route("/api/activities", methods=['POST','OPTIONS'])
 @cross_origin()
 def data_activities():
-  user_handle  = 'understar' #'andrewbrown'
-  message = request.json['message']
-  ttl = request.json['ttl']
-  model = CreateActivity.run(message, user_handle, ttl)
-  if model['errors'] is not None:
-    return model['errors'], 422
-  else:
-    return model['data'], 200
-  return
+  app.logger.debug('Start authorization before creating avtivities.')
+  access_token = CognitoTokenVertification.extract_access_token(request.headers)
+  if access_token is not None:
+    try:
+        cognito_token_vertification.verify(access_token)
+        claims = cognito_token_vertification.claims
+        app.logger.debug('Authorization success.')
+        # app.logger.debug(claims)
+        cognito_id = claims["username"] # return cognito user id
+        
+        # use cognito_user_id to query user_handle
+        sql = db.template('users', 'object') 
+        user_info = db.query_object_json(sql, {
+          'cognito_id': cognito_id
+        })
+        user_handle = user_info['handle']
+
+        message = request.json['message']
+        ttl = request.json['ttl']
+        model = CreateActivity.run(message, user_handle, ttl)
+        if model['errors'] is not None:
+          return model['errors'], 422
+        else:
+          return model['data'], 200
+    except TokenVerifyError as e:
+        app.logger.debug('Authorization fail.')
+        return ['access token authorization fail'], 422
+  return ['login first'], 422
 
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
 def data_show_activity(activity_uuid):
