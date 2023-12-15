@@ -172,6 +172,7 @@ def data_home():
   #       app.logger.debug('Authorization fail.')
   #       # _ = request.data
   #       # abort(make_response(jsonify(message=str(e)), 401))
+  
   data = HomeActivities.run()
   LOGGER.info(f"This is the data from server. The len is {len(data)}")
   return data, 200
@@ -203,7 +204,7 @@ def data_search():
 @app.route("/api/activities", methods=['POST','OPTIONS'])
 @cross_origin()
 def data_activities():
-  user_handle  = 'andrewbrown'
+  user_handle  = 'understar' #'andrewbrown'
   message = request.json['message']
   ttl = request.json['ttl']
   model = CreateActivity.run(message, user_handle, ttl)
