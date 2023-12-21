@@ -46,9 +46,10 @@ from flask import got_request_exception
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 console_handler = logging.StreamHandler()
-cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
+#TODO Somehow, CW doesn't work anymore.
+# cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
 LOGGER.addHandler(console_handler)
-LOGGER.addHandler(cw_handler)
+# LOGGER.addHandler(cw_handler)
 # LOGGER.info("some message")
 
 # Honeycomb
@@ -124,9 +125,11 @@ def after_request(response):
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
-  access_token = CognitoTokenVertification.extract_access_token(request.headers)
+  access_token = cognito_token_vertification.extract_access_token(request.headers)
   try:
-    claims = CognitoTokenVertification.verify(access_token)
+    cognito_token_vertification.verify(access_token)
+    claims = cognito_token_vertification.claims
+    LOGGER.info(claims)
     cognito_user_id = claims['sub']
     model = MessageGroups.run(cognito_user_id=cognito_user_id)
     if model['errors'] is not None:
