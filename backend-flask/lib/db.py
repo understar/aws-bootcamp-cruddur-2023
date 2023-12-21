@@ -45,7 +45,7 @@ class Db:
 
   # insert
   def query_commit(self, sql, params={}):
-    self.print_sql('commit with returning', sql)
+    self.print_sql('commit with returning', sql, params)
     self.print_params(params)
 
     pattern = r"\bRETURNING\b"

@@ -14,6 +14,7 @@ CREATE TABLE public.users (
   handle text NOT NULL,
   email text NOT NULL,
   cognito_user_id text NOT NULL,
+  updated_at TIMESTAMP default current_timestamp NOT NULL,
   created_at TIMESTAMP default current_timestamp NOT NULL
 );
 
@@ -26,6 +27,7 @@ CREATE TABLE public.activities (
   likes_count integer DEFAULT 0,
   reply_to_activity_uuid integer,
   expires_at TIMESTAMP,
+  updated_at TIMESTAMP default current_timestamp NOT NULL,
   created_at TIMESTAMP default current_timestamp NOT NULL
 );
 
