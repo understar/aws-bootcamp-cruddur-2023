@@ -12,9 +12,10 @@ class Ddb:
     else:
       attrs = {}
     dynamodb = boto3.client('dynamodb',**attrs)
-    return dynamodb  
+    return dynamodb
+
   def list_message_groups(client,my_user_uuid):
-    current_year = datetime.datetime.now().year
+    current_year = datetime.now().year
     table_name = 'cruddur-messages'
     query_params = {
       'TableName': table_name,
@@ -23,7 +24,7 @@ class Ddb:
       'Limit': 20,
       'ExpressionAttributeValues': {
         ':year': {'S': str(current_year) },
-        ':pkey': {'S': f"GRP#{my_user_uuid}"}
+        ':pk': {'S': f"GRP#{my_user_uuid}"}
       }
     }
     print('query-params')
@@ -46,3 +47,4 @@ class Ddb:
         'created_at': last_sent_at
       })
     return results
+
