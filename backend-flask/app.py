@@ -131,6 +131,7 @@ def data_message_groups():
     claims = cognito_token_vertification.claims
     # LOGGER.info(claims)
     cognito_user_id = claims['sub']
+    app.logger.debug(f'Get MessageGroups for {cognito_user_id}')
     model = MessageGroups.run(cognito_user_id=cognito_user_id)
     if model['errors'] is not None:
       return model['errors'], 422
@@ -141,7 +142,7 @@ def data_message_groups():
     app.logger.debug(e)
     return {}, 401
 
-@app.route("/api/messages/@<string:message_group_uuid>", methods=['GET'])
+@app.route("/api/messages/<string:message_group_uuid>", methods=['GET'])
 def data_messages(message_group_uuid):
   # user_sender_handle = 'understar'
   # user_receiver_handle = request.args.get('user_reciever_handle')
@@ -151,6 +152,7 @@ def data_messages(message_group_uuid):
     cognito_token_vertification.verify(access_token)
     claims = cognito_token_vertification.claims
     cognito_user_id = claims['sub']
+    app.logger.debug(f'Get Messages for {message_group_uuid}')
     model = Messages.run(
       message_group_uuid=message_group_uuid, 
       cognito_user_id=cognito_user_id

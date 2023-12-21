@@ -10,7 +10,7 @@ if ! command -v "psql" &> /dev/null; then
 fi
 
 export CODESPACE_IP=$(curl ifconfig.me)
-source "$CODESPACE_VSCODE_FOLDER/backend-flask/bin/db-update-sg-rule"
+source "$CODESPACE_VSCODE_FOLDER/backend-flask/bin/rds-update-sg-rule"
 
 cd $CODESPACE_VSCODE_FOLDER/backend-flask
 pip install -r requirements.txt

@@ -19,3 +19,16 @@ echo "deleting table: $TABLE_NAME"
 
 aws dynamodb delete-table $ENDPOINT_URL \
   --table-name $TABLE_NAME
+
+# Check if the table exists
+# aws dynamodb describe-table $ENDPOINT_URL --table-name $TABLE_NAME >/dev/null 2>&1
+
+# if [ $? -eq 0 ]; then
+#     echo "Table $TABLE_NAME exists. Deleting..."
+#     aws dynamodb delete-table $ENDPOINT_URL --table-name $TABLE_NAME
+#     echo "Table $TABLE_NAME deleted."
+# else
+#     echo "Table $TABLE_NAME does not exist."
+# fi
+
+exit 0

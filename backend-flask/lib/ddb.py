@@ -3,6 +3,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 import uuid
 import os
+from flask import current_app
 
 class Ddb:
   def client():
@@ -27,10 +28,8 @@ class Ddb:
         ':pk': {'S': f"GRP#{my_user_uuid}"}
       }
     }
-    print('query-params')
-    print(query_params)
-    print('client')
-    print(client)
+    current_app.logger.debug(f'query-params: {query_params}')
+    current_app.logger.debug(f'client: {client}')
 
     # query the table
     response = client.query(**query_params)
