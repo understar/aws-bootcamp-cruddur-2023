@@ -129,7 +129,7 @@ def data_message_groups():
   try:
     cognito_token_vertification.verify(access_token)
     claims = cognito_token_vertification.claims
-    LOGGER.info(claims)
+    # LOGGER.info(claims)
     cognito_user_id = claims['sub']
     model = MessageGroups.run(cognito_user_id=cognito_user_id)
     if model['errors'] is not None:
@@ -141,17 +141,28 @@ def data_message_groups():
     app.logger.debug(e)
     return {}, 401
 
-@app.route("/api/messages/@<string:handle>", methods=['GET'])
-def data_messages(handle):
-  user_sender_handle = 'andrewbrown'
-  user_receiver_handle = request.args.get('user_reciever_handle')
+@app.route("/api/messages/@<string:message_group_uuid>", methods=['GET'])
+def data_messages(message_group_uuid):
+  # user_sender_handle = 'understar'
+  # user_receiver_handle = request.args.get('user_reciever_handle')
 
-  model = Messages.run(user_sender_handle=user_sender_handle, user_receiver_handle=user_receiver_handle)
-  if model['errors'] is not None:
-    return model['errors'], 422
-  else:
-    return model['data'], 200
-  return
+  access_token = cognito_token_vertification.extract_access_token(request.headers)
+  try:
+    cognito_token_vertification.verify(access_token)
+    claims = cognito_token_vertification.claims
+    cognito_user_id = claims['sub']
+    model = Messages.run(
+      message_group_uuid=message_group_uuid, 
+      cognito_user_id=cognito_user_id
+      )
+    if model['errors'] is not None:
+      return model['errors'], 422
+    else:
+      return model['data'], 200
+    return
+  except TokenVerifyError as e:
+    app.logger.debug(e)
+    return {}, 401
 
 @app.route("/api/messages", methods=['POST','OPTIONS'])
 @cross_origin()
