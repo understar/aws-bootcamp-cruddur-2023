@@ -158,6 +158,18 @@ momento cache create --name cruddur
 
 - grant the lambda IAM role permission to update table items
 
+```
+ Please ensure the role can perform the GetRecords, GetShardIterator, DescribeStream, and ListStreams Actions on your stream in IAM.
+``` 
+
+#### Grant the lambda IAM role permission to full access dynamodb
+Easy way --- add all related to dynamodb
+- AmazonDynamoDBFullAccess
+- AmazonDynamoDBReadOnlyAccess
+- AWSLambdaDynamoDBExecutionRole
+- AWSLambdaInvocation-DynamoDB
+
+
 
 **The Function**
 

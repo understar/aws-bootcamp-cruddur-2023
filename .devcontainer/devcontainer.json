@@ -34,6 +34,9 @@
 		},
 		"5432": {
 			"visibility": "public"
+		},
+		"8000": {
+			"visibility": "public"
 		}
 	},
 	// Uncomment the next line if you want start specific services in your Docker Compose config.

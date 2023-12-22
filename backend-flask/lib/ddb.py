@@ -8,10 +8,10 @@ from flask import current_app
 class Ddb:
   def client():
     endpoint_url = os.getenv("AWS_ENDPOINT_URL")
-    if endpoint_url:
+    if endpoint_url: # development env
       attrs = { 'endpoint_url': endpoint_url }
-    else:
-      attrs = {}
+    else: # production env
+      attrs = {} 
     dynamodb = boto3.client('dynamodb',**attrs)
     return dynamodb
 
