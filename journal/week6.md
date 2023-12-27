@@ -62,15 +62,17 @@ import urllib.request
 response = urllib.request.urlopen('http://localhost:4567/api/health-check')
 if response.getcode() == 200:
   print("Flask server is running")
+  exit(0)
 else:
   print("Flask server is not running")
+  exit(1)
 ```
 
 ## Create CloudWatch Log Group
 
 ```sh
 aws logs create-log-group --log-group-name cruddur
-aws logs put-retention-policy --log-group-name cruddur --retention-in-days 1
+aws logs put-retention-policy --log-group-name cruddur --retention-in-days 1 # log retentioon time
 ```
 
 ## Create ECS Cluster
@@ -81,7 +83,7 @@ aws ecs create-cluster \
 --service-connect-defaults namespace=cruddur
 ```
 
-```sh
+<!-- ```sh
 export CRUD_CLUSTER_SG=$(aws ec2 create-security-group \
   --group-name cruddur-ecs-cluster-sg \
   --description "Security group for Cruddur ECS ECS cluster" \
@@ -90,14 +92,14 @@ export CRUD_CLUSTER_SG=$(aws ec2 create-security-group \
 echo $CRUD_CLUSTER_SG
 ```
 
-Get the Group ID (after its created)
+Get the Group ID (after its created) -->
 
-```sh
+<!-- ```sh
 export CRUD_CLUSTER_SG=$(aws ec2 describe-security-groups \
 --group-names cruddur-ecs-cluster-sg \
 --query 'SecurityGroups[0].GroupId' \
 --output text)
-```
+``` -->
 
 ## Gaining Access to ECS Fargate Container
 
@@ -180,7 +182,7 @@ docker tag backend-flask:latest $ECR_BACKEND_FLASK_URL:latest
 docker push $ECR_BACKEND_FLASK_URL:latest
 ```
 
-### For Frontend React
+### For Frontend React   
 
 #### Create Repo
 ```sh
@@ -248,7 +250,7 @@ aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/OTEL_
 
 
 #### Create ExecutionRole
-
+- Create role #1 using inline json
 ```sh
 aws iam create-role \
     --role-name CruddurServiceExecutionRole \
@@ -263,13 +265,12 @@ aws iam create-role \
   }]
 }"
 ```
-
+- Create role #2 using json file
 ```sh
-aws iam create-role \    
---role-name CruddurServiceExecutionPolicy  \   
---assume-role-policy-document file://aws/policies/service-assume-role-execution-policy.json
+aws iam create-role --role-name CruddurServiceExecutionRole --assume-role-policy-document file://aws/policies/service-assume-role-execution-policy.json
 ```
 
+- Put role policy
 ```sh
 aws iam put-role-policy \
   --policy-name CruddurServiceExecutionPolicy \
@@ -278,27 +279,7 @@ aws iam put-role-policy \
 "
 ```
 
-```sh
-aws iam attach-role-policy --policy-arn POLICY_ARN --role-name CruddurServiceExecutionRole
-```
-
-
-
-```json
-
-       {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": "ssm:GetParameter",
-            "Resource": "arn:aws:ssm:ca-central-1:387543059434:parameter/cruddur/backend-flask/*"
-        }
-
-```sh
-aws iam attach-role-policy \
-    --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy \
-    --role-name CruddurServiceExecutionRole
-```
-
+- service-execution-policy.json
 ```json
 {
   "Sid": "VisualEditor0",
@@ -307,8 +288,20 @@ aws iam attach-role-policy \
     "ssm:GetParameters",
     "ssm:GetParameter"
   ],
-  "Resource": "arn:aws:ssm:ca-central-1:387543059434:parameter/cruddur/backend-flask/*"
+  "Resource": "arn:aws:ssm:us-east-1:074066800719:parameter/cruddur/backend-flask/*"
 }
+```
+
+- Attach role policy by POLICY_ARN
+```sh
+aws iam attach-role-policy --policy-arn POLICY_ARN --role-name CruddurServiceExecutionRole
+```
+
+Set policy arn as below.
+```sh
+aws iam attach-role-policy \
+    --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy \
+    --role-name CruddurServiceExecutionRole
 ```
 
 #### Create TaskRole
@@ -447,6 +440,8 @@ Create a new folder called `aws/task-defintions` and place the following files i
 ```sh
 aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json
 ```
+
+https://medium.com/@gwenleigh/week-6-error-the-selected-task-definition-is-not-compatible-with-the-selected-compute-strategy-b286a03afe51
 
 
 ```sh
